@@ -23,15 +23,18 @@ export class App extends Component {
       title: this.state.item,
     }
     const updatedItems = [...this.state.items, newItem]
-
+    localStorage.setItem("itemlist", JSON.stringify(updatedItems))
+    const localStorageItems = JSON.parse(localStorage.getItem("itemlist"))
+    console.log(localStorageItems);
     this.setState({
-      items: updatedItems,
+      items: localStorageItems,
       item: '',
       id: uuidv4(),
       editItem: false,
     })
   }
   clearList = () => {
+    localStorage.clear()
     this.setState({
       items:[]
     })
