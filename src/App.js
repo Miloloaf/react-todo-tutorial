@@ -11,6 +11,7 @@ export class App extends Component {
     editItem: false,
   }
   handleChange = (e) => {
+
     this.setState({
       item: e.target.value,
     })
@@ -31,14 +32,28 @@ export class App extends Component {
     })
   }
   clearList = () => {
-    console.log('clear list')
+    this.setState({
+      items:[]
+    })
   }
   handleDelete = (id) => {
-    console.log(`handle delete ${id}`)
+    const filteredItems = this.state.items.filter(item => item.id !== id);
+    this.setState({
+      items: filteredItems
+    })
   }
   handleEdit = (id) => {
-    console.log(`handle edit ${id}`)
+    const filteredItems = this.state.items.filter((item) => item.id !== id);
+    const selectedItem = this.state.items.find(item=> item.id === id);
+    this.setState ({
+      items: filteredItems,
+      item: selectedItem.title,
+      id: id,
+      editItem: true
+    })
+
   }
+    
 
   render() {
     return (
@@ -57,6 +72,7 @@ export class App extends Component {
               items={this.state.items}
               clearList={this.clearList}
               handleEdit={this.handleEdit}
+              handleDelete={this.handleDelete}
             />
           </div>
         </div>
