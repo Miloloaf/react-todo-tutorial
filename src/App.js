@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Todoinput from './components/Todoinput'
 import TodoList from './components/TodoList'
+
 export class App extends Component {
   state = {
     items: [],
@@ -10,12 +11,24 @@ export class App extends Component {
     item: '',
     editItem: false,
   }
-  handleChange = (e) => {
 
+  handleLocalState = () => {
+    if (localStorage.getItem('itemlist') === null) {
+      console.log('null')
+    } else {
+      const localStorageItems = JSON.parse(localStorage.getItem('itemlist'))
+      this.setState({
+        items: localStorageItems,
+      })
+    }
+  }
+
+  handleChange = (e) => {
     this.setState({
       item: e.target.value,
     })
   }
+
   handleSubmit = (e) => {
     e.preventDefault()
     const newItem = {
@@ -23,11 +36,12 @@ export class App extends Component {
       title: this.state.item,
     }
     const updatedItems = [...this.state.items, newItem]
-    localStorage.setItem("itemlist", JSON.stringify(updatedItems))
-    const localStorageItems = JSON.parse(localStorage.getItem("itemlist"))
-    console.log(localStorageItems);
+
+    // Local Storage
+    localStorage.setItem('itemlist', JSON.stringify(updatedItems))
+
     this.setState({
-      items: localStorageItems,
+      items: updatedItems,
       item: '',
       id: uuidv4(),
       editItem: false,
@@ -36,27 +50,32 @@ export class App extends Component {
   clearList = () => {
     localStorage.clear()
     this.setState({
-      items:[]
+      items: [],
     })
   }
   handleDelete = (id) => {
-    const filteredItems = this.state.items.filter(item => item.id !== id);
-    this.setState({
-      items: filteredItems
-    })
+    const filteredItems = this.state.items.filter((item) => item.id !== id)
+    this.setState(
+      {
+        items: filteredItems,
+      },
+      () => localStorage.setItem('itemlist', JSON.stringify(filteredItems))
+    )
   }
   handleEdit = (id) => {
-    const filteredItems = this.state.items.filter((item) => item.id !== id);
-    const selectedItem = this.state.items.find(item=> item.id === id);
-    this.setState ({
+    const filteredItems = this.state.items.filter((item) => item.id !== id)
+    const selectedItem = this.state.items.find((item) => item.id === id)
+    this.setState({
       items: filteredItems,
       item: selectedItem.title,
       id: id,
-      editItem: true
+      editItem: true,
     })
-
   }
-    
+  // Loads up state from the LocalStorage
+  componentDidMount() {
+    this.handleLocalState()
+  }
 
   render() {
     return (
